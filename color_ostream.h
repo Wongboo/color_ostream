@@ -59,7 +59,7 @@ namespace color_ostream {
     };
 
     template<class CharT, class Traits>
-    inline std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &ostream, const clr color) {
+    std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &ostream, const clr color) {
 #ifdef _WIN32
         static const uint16_t initial_attributes = [] {
             CONSOLE_SCREEN_BUFFER_INFO buffer_info;
@@ -120,7 +120,7 @@ namespace color_ostream {
         using ostream = std::basic_ostream<char_type, traits_type>;
         template<typename T>
         requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
-        color_ostream& operator<<(T t){
+        inline color_ostream& operator<<(T t){
             i = i == 7 ? 0 : i + 1;
             reinterpret_cast<ostream&>(*this) << clrs[i] << t;
             return *this;
@@ -139,7 +139,7 @@ namespace color_ostream {
         using ostream = std::basic_ostream<char_type, traits_type>;
         template<typename T>
         requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
-        random_ostream& operator<<(T t){
+        inline random_ostream& operator<<(T t){
             reinterpret_cast<ostream&>(*this) << clrs[dis(gen)] << t;
             return *this;
         }
