@@ -115,7 +115,8 @@ namespace color_ostream {
     class color_ostream : public std::basic_ostream<char_type, traits_type>{
         size_t i{};
     public:
-        inline explicit color_ostream(std::basic_streambuf<char_type, traits_type> *_sb) { this->init(_sb); }
+        inline explicit color_ostream(std::basic_streambuf<char_type, traits_type> *_sb) 
+            : std::basic_ostream<char_type, traits_type>(_sb) {}
         using ostream = std::basic_ostream<char_type, traits_type>;
         template<typename T>
         requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
@@ -133,7 +134,8 @@ namespace color_ostream {
         std::mt19937 gen = std::mt19937(std::random_device{}());
         std::uniform_int_distribution<int> dis = std::uniform_int_distribution(0, 7);
     public:
-        inline explicit random_ostream(std::basic_streambuf<char_type, traits_type> *_sb) { this->init(_sb); }
+        inline explicit random_ostream(std::basic_streambuf<char_type, traits_type> *_sb)
+          : std::basic_ostream<char_type, traits_type>(_sb) {}
         using ostream = std::basic_ostream<char_type, traits_type>;
         template<typename T>
         requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)

@@ -1,2 +1,6 @@
 # 项目排除路径
-/cmake-build-debug-llvm-clang/
+/out
+/cmake*
+/.idea
+/.vs
+/build
