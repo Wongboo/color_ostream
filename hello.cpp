@@ -8,6 +8,5 @@ int main() {
     rd_wcout << L"你好，沃德\n";
     rd_wcout << L"你好，世界\n";
     rd_wcout << L"哈啰，世界\n";
-    std::wcout << std::quoted(L"1");
     return 0;
 }
