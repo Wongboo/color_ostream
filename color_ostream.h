@@ -148,6 +148,7 @@ namespace color_ostream {
 
     random_generator random_color; // NOLINT(cert-err58-cpp)
     template<class CharT, class Traits>
+    [[deprecated("This is not good")]]
     inline std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &ostream, random_generator& rd){
         return ostream << clrs[rd.get_num()];
     }
