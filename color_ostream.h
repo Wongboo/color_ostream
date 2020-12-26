@@ -153,7 +153,7 @@ namespace color_ostream {
     };
 
     template<typename CharT>
-    class random_generator_plus{
+    class random_generator_truecolor{
         std::ranlux24_base gen {std::random_device{}()};
         std::uniform_int_distribution<size_t> dis {0, 255};
     public:
@@ -175,12 +175,34 @@ namespace color_ostream {
         }
     };
 
+    template<typename CharT>
+    class random_generator_256color{
+        std::ranlux24_base gen {std::random_device{}()};
+        std::uniform_int_distribution<size_t> dis {0, 255};
+    public:
+        [[nodiscard]] inline auto get_color(){
+            std::basic_string<CharT> buffer;
+            if constexpr (std::is_same_v<CharT, char>)
+                buffer = "\x1b[38;5;000m";
+            else
+                buffer = L"\x1b[38;5;000m";
+            auto s = dis(gen);
+            buffer[7] = static_cast<CharT>('0' + s / 100);
+            s = s % 100;
+            buffer[8] = static_cast<CharT>('0' + s / 10);
+            s = s % 10;
+            buffer[9] = static_cast<CharT>('0' + s);
+            return buffer;
+        }
+    };
+
     [[maybe_unused]]random_generator random_color; // NOLINT(cert-err58-cpp)
 #define COLORFUL(x) \
     using os##x = decltype(std::x);\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, circle_generator> cc_##x(std::x.rdbuf());\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator> rd_##x(std::x.rdbuf());\
-    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_plus<typename os##x::char_type>> rdp_##x(std::x.rdbuf());
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_truecolor<typename os##x::char_type>> rdtrue_##x(std::x.rdbuf());\
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_256color<typename os##x::char_type>> rd256_##x(std::x.rdbuf());
 #define W_COLORFUL(x) COLORFUL(x) COLORFUL(w##x)
 
     W_COLORFUL(cout) // NOLINT(cert-err58-cpp)
