@@ -27,6 +27,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     for (size_t i{}; i < 9; ++i)
         wcout << random_color << L" 彩色 ";
     wcout << '\n';
+
+    random_generator rd;
     for (size_t i{}; i < 9; ++i)
-        rd_wcout << L" 彩色 ";
+        wcout << clrs[random_color.get_num()] << L" 彩色 ";
+    wcout << '\n';
 }
