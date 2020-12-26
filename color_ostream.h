@@ -146,9 +146,9 @@ namespace color_ostream {
         [[nodiscard]] inline size_t get_num(){return i = i == 7 ? 0 : i + 1;}
     };
 
-    random_generator random_color; // NOLINT(cert-err58-cpp)
+    [[maybe_unused]]random_generator random_color; // NOLINT(cert-err58-cpp)
     template<class CharT, class Traits>
-    [[deprecated("See final example in color.cpp, use that instead of this")]]
+    [[deprecated("尽量用color.cpp最后一个例子，我也不知道这儿支不支持中文")]]
     inline std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &ostream, random_generator& rd){
         return ostream << clrs[rd.get_num()];
     }
