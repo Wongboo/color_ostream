@@ -1,5 +1,4 @@
-﻿#include <span>
-#include "color_ostream.h"
+﻿#include "color_ostream.h"
 
 using namespace color_ostream;
 

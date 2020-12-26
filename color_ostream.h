@@ -137,13 +137,13 @@ namespace color_ostream {
         std::mt19937 gen {std::random_device{}()};
         std::uniform_int_distribution<size_t> dis {0, 7};
     public:
-        inline size_t get_num(){return dis(gen);}
+        [[nodiscard]] inline size_t get_num(){return dis(gen);}
     };
 
     class circle_generator{
         size_t i{};
     public:
-        inline size_t get_num(){return i = i == 7 ? 0 : i + 1;}
+        [[nodiscard]] inline size_t get_num(){return i = i == 7 ? 0 : i + 1;}
     };
 
     random_generator random_color; // NOLINT(cert-err58-cpp)

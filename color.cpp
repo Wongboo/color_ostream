@@ -1,5 +1,4 @@
 ﻿#include "color_ostream.h"
-#include <iostream>
 
 using namespace color_ostream;
 using namespace std;
