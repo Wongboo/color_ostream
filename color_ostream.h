@@ -180,7 +180,7 @@ namespace color_ostream {
     using os##x = decltype(std::x);\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, circle_generator> cc_##x(std::x.rdbuf());\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator> rd_##x(std::x.rdbuf());\
-    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_plus<typename os##x::char_type>> rdp_##x(std::x.rdbuf());
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_plus<typename os##x::char_type>> rd256_##x(std::x.rdbuf());
 #define W_COLORFUL(x) COLORFUL(x) COLORFUL(w##x)
 
     W_COLORFUL(cout) // NOLINT(cert-err58-cpp)
