@@ -74,7 +74,10 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), initial_attributes);
 #elif __linux__ || __unix__ || __APPLE__
-            ostream << "\033[m";
+            if constexpr (std::is_same_v<CharT, char>)
+                ostream << "\033[m";
+            else
+                ostream << L"\033[m";
 #endif
         } else {
 #ifdef _WIN32
@@ -90,7 +93,10 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), set);
 #elif __linux__ || __unix__ || __APPLE__
-            ostream << "\033[" << static_cast<uint32_t>(color) << "m";
+            if constexpr (std::is_same_v<CharT, char>)
+                ostream << "\033[" << static_cast<uint32_t>(color) << "m";
+            else
+                ostream << L"\033[" << static_cast<uint32_t>(color) << L"m";
 #endif
         }
         return ostream;
@@ -121,7 +127,7 @@ namespace color_ostream {
         template<typename T>
         requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
         inline color_ostream& operator<<(T t){
-            static_cast<ostream&>(*this) << clrs[generator_.get_num()] << t;
+            static_cast<ostream&>(*this) << generator_.get_color() << t;
             return *this;
         }
         inline color_ostream& operator<<(const char_type* str){
@@ -137,26 +143,44 @@ namespace color_ostream {
         std::mt19937 gen {std::random_device{}()};
         std::uniform_int_distribution<size_t> dis {0, 7};
     public:
-        [[nodiscard]] inline size_t get_num(){return dis(gen);}
+        [[nodiscard]] inline auto get_color(){return clrs[dis(gen)];}
     };
 
     class circle_generator{
         size_t i{};
     public:
-        [[nodiscard]] inline size_t get_num(){return i = i == 7 ? 0 : i + 1;}
+        [[nodiscard]] inline auto get_color(){return clrs[i = i == 7 ? 0 : i + 1];}
+    };
+
+    template<typename CharT>
+    class random_generator_plus{
+        std::ranlux24_base gen {std::random_device{}()};
+        std::uniform_int_distribution<size_t> dis {0, 255};
+    public:
+        [[nodiscard]] auto get_color(){
+            std::basic_string<CharT> buffer;
+            if constexpr (std::is_same_v<CharT, char>)
+                buffer = "\x1b[38;2;000;000;000m";
+            else
+                buffer = L"\x1b[38;2;000;000;000m";
+            for (size_t i{}; i < 3; ++i) {
+                auto s = dis(gen);
+                buffer[4 * i + 7] = static_cast<CharT>('0' + s / 100);
+                s = s % 100;
+                buffer[4 * i + 8] = static_cast<CharT>('0' + s / 10);
+                s = s % 10;
+                buffer[4 * i + 9] = static_cast<CharT>('0' + s);
+            }
+            return buffer;
+        }
     };
 
     [[maybe_unused]]random_generator random_color; // NOLINT(cert-err58-cpp)
-    template<class CharT, class Traits>
-    [[deprecated("尽量用color.cpp最后一个例子，我也不知道这儿支不支持中文")]]
-    inline std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &ostream, random_generator& rd){
-        return ostream << clrs[rd.get_num()];
-    }
-
 #define COLORFUL(x) \
     using os##x = decltype(std::x);\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, circle_generator> cc_##x(std::x.rdbuf());\
-    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator> rd_##x(std::x.rdbuf());
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator> rd_##x(std::x.rdbuf());\
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_plus<typename os##x::char_type>> rdp_##x(std::x.rdbuf());
 #define W_COLORFUL(x) COLORFUL(x) COLORFUL(w##x)
 
     W_COLORFUL(cout) // NOLINT(cert-err58-cpp)
