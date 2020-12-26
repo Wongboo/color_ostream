@@ -24,4 +24,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
               << clr::grey    << clr::on_white   << L" 灰色 "
               << clr::white   << clr::on_grey    << L" 白色 "
               << clr::reset                      << L" 重置\n";
+    for (size_t i{}; i < 9; ++i)
+        wcout << random_color << L" 彩色 ";
+    wcout << '\n';
+    for (size_t i{}; i < 9; ++i)
+        rd_wcout << L" 彩色 ";
 }

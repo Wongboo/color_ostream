@@ -100,20 +100,20 @@ namespace color_ostream {
                               clr::yellow};
 
     template<typename T>
-    concept io_manipulator = std::is_same_v<T, decltype(std::setw(1))> ||
-                             std::is_same_v<T, decltype(std::showpos)> ||
-                             std::is_same_v<T, decltype(std::boolalpha)> ||
-                             std::is_same_v<T, decltype(std::showpoint)> ||
-                             std::is_same_v<T, decltype(std::showbase)> ||
-                             std::is_same_v<T, decltype(std::uppercase)> ||
-                             std::is_same_v<T, decltype(std::hex)> ||
-                             std::is_same_v<T, decltype(std::right)> ||
-                             std::is_same_v<T, decltype(std::fixed)> ||
-                             std::is_same_v<T, decltype(std::skipws)>;
+    concept io_manipulator = std::is_same_v<T, decltype(std::showpoint)> ||
+                             std::is_same_v<T, decltype(std::setw(1))> ||
+                             std::is_same_v<T, decltype(std::setbase(1))> ||
+                             std::is_same_v<T, decltype(std::setfill(1))> ||
+                             std::is_same_v<T, decltype(std::setprecision(1))> ||
+                             std::is_same_v<T, decltype(std::get_time(nullptr, "1"))> ||
+                             std::is_same_v<T, decltype(std::get_time(nullptr, L"1"))> ||
+                             std::is_same_v<T, decltype(std::quoted("1"))> ||
+                             std::is_same_v<T, decltype(std::quoted(L"1"))> ||
+                             std::is_same_v<T, decltype(std::resetiosflags(std::ios_base::dec))>;
 
-    template<typename char_type, typename traits_type>
+    template<typename char_type, typename traits_type,typename generator>
     class color_ostream : public std::basic_ostream<char_type, traits_type>{
-        size_t i{};
+        generator generator_;
     public:
         inline explicit color_ostream(std::basic_streambuf<char_type, traits_type> *_sb) 
             : std::basic_ostream<char_type, traits_type>(_sb) {}
@@ -121,43 +121,46 @@ namespace color_ostream {
         template<typename T>
         requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
         inline color_ostream& operator<<(T t){
-            i = i == 7 ? 0 : i + 1;
-            reinterpret_cast<ostream&>(*this) << clrs[i] << t;
+            static_cast<ostream&>(*this) << clrs[generator_.get_num()] << t;
             return *this;
         }
-        inline color_ostream& operator<<(ostream& (*__pf)(ostream&))
-        { return reinterpret_cast<color_ostream&>(__pf(reinterpret_cast<ostream&>(*this))); }
+        inline color_ostream& operator<<(const char_type* str){
+            for (size_t i{}; i < std::char_traits<wchar_t>::length(str); ++i)
+                operator<<(str[i]);
+            return *this;
+        }
+        inline color_ostream& operator<<(ostream& (*_pf)(ostream&))
+        { return static_cast<color_ostream&>(_pf(static_cast<ostream&>(*this))); }
     };
 
-    template<typename char_type, typename traits_type>
-    class random_ostream : public std::basic_ostream<char_type, traits_type>{
-        std::mt19937 gen = std::mt19937(std::random_device{}());
-        std::uniform_int_distribution<int> dis = std::uniform_int_distribution(0, 7);
+    class random_generator{
+        std::mt19937 gen {std::random_device{}()};
+        std::uniform_int_distribution<size_t> dis {0, 7};
     public:
-        inline explicit random_ostream(std::basic_streambuf<char_type, traits_type> *_sb)
-          : std::basic_ostream<char_type, traits_type>(_sb) {}
-        using ostream = std::basic_ostream<char_type, traits_type>;
-        template<typename T>
-        requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
-        inline random_ostream& operator<<(T t){
-            reinterpret_cast<ostream&>(*this) << clrs[dis(gen)] << t;
-            return *this;
-        }
-        inline random_ostream& operator<<(ostream& (*__pf)(ostream&))
-        { return reinterpret_cast<random_ostream&>(__pf(reinterpret_cast<ostream&>(*this))); }
+        inline size_t get_num(){return dis(gen);}
     };
 
-#define color(x) \
-    using os##x = decltype(std::x);\
-    color_ostream<typename os##x::char_type, typename os##x::traits_type> cl_##x(std::x.rdbuf());\
-    random_ostream<typename os##x::char_type, typename os##x::traits_type> rd_##x(std::x.rdbuf());
+    class circle_generator{
+        size_t i{};
+    public:
+        inline size_t get_num(){return i = i == 7 ? 0 : i + 1;}
+    };
 
-    color(wcout)
-    color(cout)
-    color(wcerr)
-    color(cerr)
-    color(wclog)
-    color(clog)
+    random_generator random_color; // NOLINT(cert-err58-cpp)
+    template<class CharT, class Traits>
+    inline std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &ostream, random_generator& rd){
+        return ostream << clrs[rd.get_num()];
+    }
+
+#define COLORFUL(x) \
+    using os##x = decltype(std::x);\
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, circle_generator> cc_##x(std::x.rdbuf());\
+    color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator> rd_##x(std::x.rdbuf());
+#define W_COLORFUL(x) COLORFUL(x) COLORFUL(w##x)
+
+    W_COLORFUL(cout) // NOLINT(cert-err58-cpp)
+    W_COLORFUL(cerr) // NOLINT(cert-err58-cpp)
+    W_COLORFUL(clog) // NOLINT(cert-err58-cpp)
 }
 
 
