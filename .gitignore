@@ -4,3 +4,5 @@
 /.idea
 /.vs
 /build
+
+!CMakeLists.txt
