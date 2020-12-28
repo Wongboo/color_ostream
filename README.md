@@ -1,7 +1,7 @@
 # color
 新增256 color和true color的支持(需要相应的terminal支持，如Windows terminal， Visual studio debug时的terminal，MacOS下的terminal.app，iterm2均支持256 color)  
 项目是header-only（仅头文件）的，直接include就能用（PS：最好用C++20编译，如果用AppleClang的需要把头文件122行中的requires从句里的requires从句删掉，如果不想用C++20，需要把头文件122行中的requires从句删掉）。顺便说一下，编译时最好确认文件格式是UTF-8带BOM的。  
-项目的实现这里先挖个坑（实现还有点坑，大家可以给点更好的建议），我们先来看看，这个头文件的使用是多么方便吧，只需要把cout改为rd_cout（256 color 为rd256_cout, true color为rdtrue_cout，注意一下命名空间),cout/wcout，clog/wclog，cerr/wcerr同理）：  
+我们来看看，这个头文件的使用是多么方便吧，只需要把cout改为rd_cout（256 color 为rd256_cout, true color为rdtrue_cout，注意一下命名空间),cout/wcout，clog/wclog，cerr/wcerr同理）：  
 hello.cpp:
 ```C++
 //hello.cpp
@@ -15,10 +15,15 @@ int main() {
     rd_wcout << L"你好，世界\n";
     rd_wcout << L"哈啰，世界\n";
 
-    //256色
+    rd256_wcout << L"\n256 color" << std::endl;
     rd256_wcout << L"你好，沃德\n";
     rd256_wcout << L"你好，世界\n";
     rd256_wcout << L"哈啰，世界\n";
+
+    rdtrue_wcout << L"\ntrue color" << std::endl;
+    rdtrue_wcout << L"你好，沃德\n";
+    rdtrue_wcout << L"你好，世界\n";
+    rdtrue_wcout << L"哈啰，世界\n";
     return 0;
 }
 ```
