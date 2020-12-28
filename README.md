@@ -1,4 +1,5 @@
 # color
+部分借鉴自：[colored-cout](https://github.com/yurablok/colored-cout)  
 新增256 color和true color的支持(需要相应的terminal支持，如Windows terminal， Visual studio debug时的terminal，MacOS下的terminal.app，iterm2均支持256 color)  
 项目是header-only（仅头文件）的，直接include就能用（PS：最好用C++20编译，如果用AppleClang的需要把头文件122行中的requires从句里的requires从句删掉，如果不想用C++20，需要把头文件122行中的requires从句删掉）。顺便说一下，编译时最好确认文件格式是UTF-8带BOM的。  
 我们来看看，这个头文件的使用是多么方便吧，只需要把cout改为rd_cout（256 color 为rd256_cout, true color为rdtrue_cout，注意一下命名空间),cout/wcout，clog/wclog，cerr/wcerr同理）：  
