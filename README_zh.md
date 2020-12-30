@@ -1,6 +1,10 @@
 # color
 部分借鉴自：[colored-cout](https://github.com/yurablok/colored-cout)  
 新增256 color和true color的支持(需要相应的terminal支持，如[Windows terminal](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjd4eLP4PXtAhWCwosBHSTRBwMQFjAIegQIAhAC&url=https%3A%2F%2Fgithub.com%2Fmicrosoft%2Fterminal&usg=AOvVaw1YH7kNCxSWtXhMBaNHmLvG)，  Visual studio调试控制台，MacOS下的terminal.app，[iterm2](https://github.com/gnachman/iTerm2)均支持256 color)  
+[![release](https://img.shields.io/badge/release-v1.0.0-green)](https://github.com/Wongboo/color/releases/)
+![cpp](https://img.shields.io/badge/C%2B%2B-20-red) 
+[![chat](https://img.shields.io/badge/Zhihu-chat-blue)](https://zhuanlan.zhihu.com/p/339653025)
+
 项目是header-only（仅头文件）的，直接include就能用（PS：最好用C++20编译，如果用AppleClang的需要把[头文件](color_ostream.h)122行中的requires从句里的requires从句删掉，如果不想用C++20，需要把[头文件](color_ostream.h)122行中的requires从句删掉）。如果需编译范例，编译时确认文件格式是UTF-8带BOM的。  
 我们来看看，[头文件](color_ostream.h)的使用是多么方便吧，只需要把cout改为rd_cout（256 color为rd256_cout, true color为rdtrue_cout，注意一下命名空间)，cout/wcout，clog/wclog，cerr/wcerr同理）：  
 hello.cpp:
