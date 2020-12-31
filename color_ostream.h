@@ -133,7 +133,7 @@ namespace color_ostream {
         template<typename T>
 #if __cplusplus > 201703L
         requires
-#if defined(__clang_major__) && __clang_major__ >= 11
+#if defined(__cpp_concepts) && __cpp_concepts
                 requires (T a, ostream os){os << a;} &&
 #endif
                                                         (!io_manipulator<T>::value)
