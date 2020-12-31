@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 #include <array>
 #include <random>
 
@@ -180,20 +181,19 @@ namespace color_ostream {
         std::uniform_int_distribution<size_t> dis{0, 255};
     public:
         [[nodiscard]] auto get_color() {
-            std::basic_string<CharT> buffer;
+            std::basic_ostringstream<CharT> buffer;
             if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
-                buffer = "\x1b[38;2;000;000;000m";
+                buffer << "\x1b[38;2";
             else
-                buffer = L"\x1b[38;2;000;000;000m";
+                buffer << L"\x1b[38;2";
             for (size_t i{}; i < 3; ++i) {
-                auto s = dis(gen);
-                buffer[4 * i + 7] = static_cast<CharT>('0' + s / 100);
-                s = s % 100;
-                buffer[4 * i + 8] = static_cast<CharT>('0' + s / 10);
-                s = s % 10;
-                buffer[4 * i + 9] = static_cast<CharT>('0' + s);
+                if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
+                    buffer << ';' << std::setw(3) << std::setfill('0') << dis(gen);
+                else
+                    buffer << L';' << std::setw(3) << std::setfill(L'0') << dis(gen);
             }
-            return buffer;
+            buffer << 'm';
+            return buffer.str();
         }
     };
 
@@ -203,18 +203,14 @@ namespace color_ostream {
         std::uniform_int_distribution<size_t> dis{0, 255};
     public:
         [[nodiscard]] inline auto get_color() {
-            std::basic_string<CharT> buffer;
+            std::basic_ostringstream<CharT> buffer;
             if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
-                buffer = "\x1b[38;5;000m";
+                buffer << "\x1b[38;5"
+                       << ';' << std::setw(3) << std::setfill('0') << dis(gen) << 'm';
             else
-                buffer = L"\x1b[38;5;000m";
-            auto s = dis(gen);
-            buffer[7] = static_cast<CharT>('0' + s / 100);
-            s = s % 100;
-            buffer[8] = static_cast<CharT>('0' + s / 10);
-            s = s % 10;
-            buffer[9] = static_cast<CharT>('0' + s);
-            return buffer;
+                buffer << L"\x1b[38;5"
+                        << L';' << std::setw(3) << std::setfill(L'0') << dis(gen) << L'm';
+            return buffer.str();
         }
     };
 
