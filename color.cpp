@@ -25,5 +25,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
               << clr::reset                      << L" 重置\n";
     for (size_t i{}; i < 9; ++i)
         wcout << random_color.get_color() << L" 彩色 ";
-    wcout << '\n';
 }

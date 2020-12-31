@@ -14,6 +14,12 @@
 #   include <wincon.h>
 #endif
 
+#if __cplusplus >= 201703L
+#define COLOR_IF_CONSTEXPR if constexpr
+#else
+#define COLOR_IF_CONSTEXPR if
+#endif
+
 namespace color_ostream {
 #ifdef _WIN32
     enum class clr : uint16_t {
@@ -74,7 +80,7 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), initial_attributes);
 #elif __linux__ || __unix__ || __APPLE__
-            if constexpr (std::is_same_v<CharT, char>)
+            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
                 ostream << "\033[m";
             else
                 ostream << L"\033[m";
@@ -93,7 +99,7 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), set);
 #elif __linux__ || __unix__ || __APPLE__
-            if constexpr (std::is_same_v<CharT, char>)
+            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
                 ostream << "\033[" << static_cast<uint32_t>(color) << "m";
             else
                 ostream << L"\033[" << static_cast<uint32_t>(color) << L"m";
@@ -106,7 +112,7 @@ namespace color_ostream {
                               clr::yellow};
 
     template<typename T>
-    concept io_manipulator = std::is_same_v<T, decltype(std::showpoint)> ||
+    using io_manipulator = std::bool_constant<std::is_same_v<T, decltype(std::showpoint)> ||
                              std::is_same_v<T, decltype(std::setw(1))> ||
                              std::is_same_v<T, decltype(std::setbase(1))> ||
                              std::is_same_v<T, decltype(std::setfill(1))> ||
@@ -115,7 +121,7 @@ namespace color_ostream {
                              std::is_same_v<T, decltype(std::get_time(nullptr, L"1"))> ||
                              std::is_same_v<T, decltype(std::quoted("1"))> ||
                              std::is_same_v<T, decltype(std::quoted(L"1"))> ||
-                             std::is_same_v<T, decltype(std::resetiosflags(std::ios_base::dec))>;
+                             std::is_same_v<T, decltype(std::resetiosflags(std::ios_base::dec))>>;
 
     template<typename char_type, typename traits_type,typename generator>
     class color_ostream : public std::basic_ostream<char_type, traits_type>{
@@ -125,13 +131,23 @@ namespace color_ostream {
             : std::basic_ostream<char_type, traits_type>(_sb) {}
         using ostream = std::basic_ostream<char_type, traits_type>;
         template<typename T>
-        requires requires (T a, ostream os){os << a;} && (!io_manipulator<T>)
+#if __cplusplus > 201703L
+        requires
+#if defined(__clang_major__) && __clang_major__ >= 11
+                requires (T a, ostream os){os << a;} &&
+#endif
+                                                        (!io_manipulator<T>::value)
+#endif
         inline color_ostream& operator<<(T t){
-            static_cast<ostream&>(*this) << generator_.get_color() << t;
+#if __cplusplus <= 201703L
+            COLOR_IF_CONSTEXPR(!io_manipulator<T>::value)
+#endif
+            static_cast<ostream&>(*this) << generator_.get_color();
+            static_cast<ostream&>(*this) << t;
             return *this;
         }
         inline color_ostream& operator<<(const char_type* str){
-            for (size_t i{}; i < std::char_traits<wchar_t>::length(str); ++i)
+            for (size_t i{}; i < std::char_traits<char_type>::length(str); ++i)
                 operator<<(str[i]);
             return *this;
         }
@@ -159,7 +175,7 @@ namespace color_ostream {
     public:
         [[nodiscard]] auto get_color(){
             std::basic_string<CharT> buffer;
-            if constexpr (std::is_same_v<CharT, char>)
+            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
                 buffer = "\x1b[38;2;000;000;000m";
             else
                 buffer = L"\x1b[38;2;000;000;000m";
@@ -182,7 +198,7 @@ namespace color_ostream {
     public:
         [[nodiscard]] inline auto get_color(){
             std::basic_string<CharT> buffer;
-            if constexpr (std::is_same_v<CharT, char>)
+            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
                 buffer = "\x1b[38;5;000m";
             else
                 buffer = L"\x1b[38;5;000m";
