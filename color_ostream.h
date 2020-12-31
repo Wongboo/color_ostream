@@ -81,7 +81,7 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), initial_attributes);
 #elif __linux__ || __unix__ || __APPLE__
-            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same<CharT, char>::value)
                 ostream << "\033[m";
             else
                 ostream << L"\033[m";
@@ -100,7 +100,7 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), set);
 #elif __linux__ || __unix__ || __APPLE__
-            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same<CharT, char>::value)
                 ostream << "\033[" << static_cast<uint32_t>(color) << "m";
             else
                 ostream << L"\033[" << static_cast<uint32_t>(color) << L"m";
@@ -109,21 +109,21 @@ namespace color_ostream {
         return ostream;
     }
 
-    constexpr std::array clrs{clr::red, clr::blue, clr::cyan, clr::green, clr::grey, clr::magenta, clr::white,
+    constexpr std::array<clr, 8> clrs{clr::red, clr::blue, clr::cyan, clr::green, clr::grey, clr::magenta, clr::white,
                               clr::yellow};
 
     template<typename T>
-    using io_manipulator = std::bool_constant
-            <std::is_same_v<T, decltype(std::showpoint)> ||
-             std::is_same_v<T, decltype(std::setw(1))> ||
-             std::is_same_v<T, decltype(std::setbase(1))> ||
-             std::is_same_v<T, decltype(std::setfill(1))> ||
-             std::is_same_v<T, decltype(std::setprecision(1))> ||
-             std::is_same_v<T, decltype(std::get_time(nullptr, "1"))> ||
-             std::is_same_v<T, decltype(std::get_time(nullptr, L"1"))> ||
-             std::is_same_v<T, decltype(std::quoted("1"))> ||
-             std::is_same_v<T, decltype(std::quoted(L"1"))> ||
-             std::is_same_v<T, decltype(std::resetiosflags(std::ios_base::dec))>>;
+    using io_manipulator = std::integral_constant<bool,
+            std::is_same<T, decltype(std::showpoint)>::value ||
+            std::is_same<T, decltype(std::setw(1))>::value ||
+            std::is_same<T, decltype(std::setbase(1))>::value ||
+            std::is_same<T, decltype(std::setfill(1))>::value ||
+            std::is_same<T, decltype(std::setprecision(1))>::value ||
+            std::is_same<T, decltype(std::get_time(nullptr, "1"))>::value ||
+            std::is_same<T, decltype(std::get_time(nullptr, L"1"))>::value ||
+            std::is_same<T, decltype(std::quoted("1"))>::value ||
+            std::is_same<T, decltype(std::quoted(L"1"))>::value ||
+            std::is_same<T, decltype(std::resetiosflags(std::ios_base::dec))>::value >;
 
     template<typename char_type, typename traits_type, typename generator>
     class color_ostream : public std::basic_ostream<char_type, traits_type> {
@@ -182,7 +182,7 @@ namespace color_ostream {
     public:
         [[nodiscard]] auto get_color() {
             std::basic_ostringstream<CharT> buffer;
-            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same<CharT, char>::value)
                 buffer << "\x1b[38;2";
             else
                 buffer << L"\x1b[38;2";
@@ -202,7 +202,7 @@ namespace color_ostream {
     public:
         [[nodiscard]] inline auto get_color() {
             std::basic_ostringstream<CharT> buffer;
-            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same<CharT, char>::value)
                 buffer << "\x1b[38;5";
             else
                 buffer << L"\x1b[38;5";
