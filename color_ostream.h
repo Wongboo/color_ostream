@@ -166,13 +166,13 @@ namespace color_ostream {
         std::mt19937 gen{std::random_device{}()};
         std::uniform_int_distribution<size_t> dis{0, 7};
     public:
-        [[nodiscard]] inline auto get_color() { return clrs[dis(gen)]; }
+        [[nodiscard]] inline clr get_color() { return clrs[dis(gen)]; }
     };
 
     class circle_generator {
         size_t i{};
     public:
-        [[nodiscard]] inline auto get_color() { return clrs[i = i == 7 ? 0 : i + 1]; }
+        [[nodiscard]] inline clr get_color() { return clrs[i = i == 7 ? 0 : i + 1]; }
     };
 
     template<typename CharT>
@@ -180,7 +180,7 @@ namespace color_ostream {
         std::ranlux24_base gen{std::random_device{}()};
         std::uniform_int_distribution<size_t> dis{0, 255};
     public:
-        [[nodiscard]] auto get_color() {
+        [[nodiscard]] std::basic_string<CharT> get_color() {
             std::basic_ostringstream<CharT> buffer;
             if COLOR_CONSTEXPR_FOR_IF (std::is_same<CharT, char>::value)
                 buffer << "\x1b[38;2";
@@ -200,7 +200,7 @@ namespace color_ostream {
         std::ranlux24_base gen{std::random_device{}()};
         std::uniform_int_distribution<size_t> dis{0, 255};
     public:
-        [[nodiscard]] inline auto get_color() {
+        [[nodiscard]] inline std::basic_string<CharT> get_color() {
             std::basic_ostringstream<CharT> buffer;
             if COLOR_CONSTEXPR_FOR_IF (std::is_same<CharT, char>::value)
                 buffer << "\x1b[38;5";
