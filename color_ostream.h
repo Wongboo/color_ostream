@@ -15,9 +15,9 @@
 #endif
 
 #if __cplusplus >= 201703L
-#define COLOR_IF_CONSTEXPR if constexpr
+#define COLOR_CONSTEXPR_FOR_IF constexpr
 #else
-#define COLOR_IF_CONSTEXPR if
+#define COLOR_CONSTEXPR_FOR_IF
 #endif
 
 namespace color_ostream {
@@ -80,7 +80,7 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), initial_attributes);
 #elif __linux__ || __unix__ || __APPLE__
-            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
                 ostream << "\033[m";
             else
                 ostream << L"\033[m";
@@ -99,7 +99,7 @@ namespace color_ostream {
             ostream.flush();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), set);
 #elif __linux__ || __unix__ || __APPLE__
-            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
                 ostream << "\033[" << static_cast<uint32_t>(color) << "m";
             else
                 ostream << L"\033[" << static_cast<uint32_t>(color) << L"m";
@@ -112,70 +112,76 @@ namespace color_ostream {
                               clr::yellow};
 
     template<typename T>
-    using io_manipulator = std::bool_constant<std::is_same_v<T, decltype(std::showpoint)> ||
-                             std::is_same_v<T, decltype(std::setw(1))> ||
-                             std::is_same_v<T, decltype(std::setbase(1))> ||
-                             std::is_same_v<T, decltype(std::setfill(1))> ||
-                             std::is_same_v<T, decltype(std::setprecision(1))> ||
-                             std::is_same_v<T, decltype(std::get_time(nullptr, "1"))> ||
-                             std::is_same_v<T, decltype(std::get_time(nullptr, L"1"))> ||
-                             std::is_same_v<T, decltype(std::quoted("1"))> ||
-                             std::is_same_v<T, decltype(std::quoted(L"1"))> ||
-                             std::is_same_v<T, decltype(std::resetiosflags(std::ios_base::dec))>>;
+    using io_manipulator = std::bool_constant
+            <std::is_same_v<T, decltype(std::showpoint)> ||
+             std::is_same_v<T, decltype(std::setw(1))> ||
+             std::is_same_v<T, decltype(std::setbase(1))> ||
+             std::is_same_v<T, decltype(std::setfill(1))> ||
+             std::is_same_v<T, decltype(std::setprecision(1))> ||
+             std::is_same_v<T, decltype(std::get_time(nullptr, "1"))> ||
+             std::is_same_v<T, decltype(std::get_time(nullptr, L"1"))> ||
+             std::is_same_v<T, decltype(std::quoted("1"))> ||
+             std::is_same_v<T, decltype(std::quoted(L"1"))> ||
+             std::is_same_v<T, decltype(std::resetiosflags(std::ios_base::dec))>>;
 
-    template<typename char_type, typename traits_type,typename generator>
-    class color_ostream : public std::basic_ostream<char_type, traits_type>{
+    template<typename char_type, typename traits_type, typename generator>
+    class color_ostream : public std::basic_ostream<char_type, traits_type> {
         generator generator_;
     public:
-        inline explicit color_ostream(std::basic_streambuf<char_type, traits_type> *_sb) 
-            : std::basic_ostream<char_type, traits_type>(_sb) {}
+        inline explicit color_ostream(std::basic_streambuf<char_type, traits_type> *_sb)
+                : std::basic_ostream<char_type, traits_type>(_sb) {}
+
         using ostream = std::basic_ostream<char_type, traits_type>;
+
         template<typename T>
 #if __cplusplus > 201703L
         requires
 #if defined(__cpp_concepts) && __cpp_concepts
-                requires (T a, ostream os){os << a;} &&
+                 requires (T a, ostream os){os << a;} &&
 #endif
-                                                        (!io_manipulator<T>::value)
+                                                         (!io_manipulator<T>::value)
 #endif
-        inline color_ostream& operator<<(T t){
+        inline color_ostream &operator<<(T t) {
 #if __cplusplus <= 201703L
-            COLOR_IF_CONSTEXPR(!io_manipulator<T>::value)
+            if COLOR_CONSTEXPR_FOR_IF(!io_manipulator<T>::value)
 #endif
-            static_cast<ostream&>(*this) << generator_.get_color();
-            static_cast<ostream&>(*this) << t;
+            static_cast<ostream &>(*this) << generator_.get_color();
+            static_cast<ostream &>(*this) << t;
             return *this;
         }
-        inline color_ostream& operator<<(const char_type* str){
+
+        inline color_ostream &operator<<(const char_type *str) {
             for (size_t i{}; i < std::char_traits<char_type>::length(str); ++i)
                 operator<<(str[i]);
             return *this;
         }
-        inline color_ostream& operator<<(ostream& (*_pf)(ostream&))
-        { return static_cast<color_ostream&>(_pf(static_cast<ostream&>(*this))); }
+
+        inline color_ostream &operator<<(ostream &(*_pf)(ostream &)) {
+            return static_cast<color_ostream &>(_pf(static_cast<ostream &>(*this)));
+        }
     };
 
-    class random_generator{
-        std::mt19937 gen {std::random_device{}()};
-        std::uniform_int_distribution<size_t> dis {0, 7};
+    class random_generator {
+        std::mt19937 gen{std::random_device{}()};
+        std::uniform_int_distribution<size_t> dis{0, 7};
     public:
-        [[nodiscard]] inline auto get_color(){return clrs[dis(gen)];}
+        [[nodiscard]] inline auto get_color() { return clrs[dis(gen)]; }
     };
 
-    class circle_generator{
+    class circle_generator {
         size_t i{};
     public:
-        [[nodiscard]] inline auto get_color(){return clrs[i = i == 7 ? 0 : i + 1];}
+        [[nodiscard]] inline auto get_color() { return clrs[i = i == 7 ? 0 : i + 1]; }
     };
 
     template<typename CharT>
-    class random_generator_truecolor{
-        std::ranlux24_base gen {std::random_device{}()};
-        std::uniform_int_distribution<size_t> dis {0, 255};
+    class random_generator_truecolor {
+        std::ranlux24_base gen{std::random_device{}()};
+        std::uniform_int_distribution<size_t> dis{0, 255};
     public:
-        [[nodiscard]] auto get_color(){
+        [[nodiscard]] auto get_color() {
             std::basic_string<CharT> buffer;
-            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
                 buffer = "\x1b[38;2;000;000;000m";
             else
                 buffer = L"\x1b[38;2;000;000;000m";
@@ -192,13 +198,13 @@ namespace color_ostream {
     };
 
     template<typename CharT>
-    class random_generator_256color{
-        std::ranlux24_base gen {std::random_device{}()};
-        std::uniform_int_distribution<size_t> dis {0, 255};
+    class random_generator_256color {
+        std::ranlux24_base gen{std::random_device{}()};
+        std::uniform_int_distribution<size_t> dis{0, 255};
     public:
-        [[nodiscard]] inline auto get_color(){
+        [[nodiscard]] inline auto get_color() {
             std::basic_string<CharT> buffer;
-            COLOR_IF_CONSTEXPR (std::is_same_v<CharT, char>)
+            if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
                 buffer = "\x1b[38;5;000m";
             else
                 buffer = L"\x1b[38;5;000m";
