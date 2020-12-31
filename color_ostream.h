@@ -186,13 +186,11 @@ namespace color_ostream {
                 buffer << "\x1b[38;2";
             else
                 buffer << L"\x1b[38;2";
-            for (size_t i{}; i < 3; ++i) {
-                if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
-                    buffer << ';' << std::setw(3) << std::setfill('0') << dis(gen);
-                else
-                    buffer << L';' << std::setw(3) << std::setfill(L'0') << dis(gen);
-            }
-            buffer << 'm';
+            for (size_t i{}; i < 3; ++i)
+                buffer << static_cast<CharT>(';') << std::setw(3)
+                       << std::setfill(static_cast<CharT>('0')) << dis(gen);
+
+            buffer << static_cast<CharT>('m');
             return buffer.str();
         }
     };
@@ -205,11 +203,11 @@ namespace color_ostream {
         [[nodiscard]] inline auto get_color() {
             std::basic_ostringstream<CharT> buffer;
             if COLOR_CONSTEXPR_FOR_IF (std::is_same_v<CharT, char>)
-                buffer << "\x1b[38;5"
-                       << ';' << std::setw(3) << std::setfill('0') << dis(gen) << 'm';
+                buffer << "\x1b[38;5";
             else
-                buffer << L"\x1b[38;5"
-                        << L';' << std::setw(3) << std::setfill(L'0') << dis(gen) << L'm';
+                buffer << L"\x1b[38;5";
+            buffer << static_cast<CharT>(';') << std::setw(3)
+                   << std::setfill(static_cast<CharT>('0')) << dis(gen) << static_cast<CharT>('m');
             return buffer.str();
         }
     };
