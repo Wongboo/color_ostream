@@ -5,7 +5,7 @@
 ![cpp](https://img.shields.io/badge/C%2B%2B-20-red) 
 [![chat](https://img.shields.io/badge/Zhihu-chat-blue)](https://zhuanlan.zhihu.com/p/339653025)
 
-项目是header-only（仅头文件）的，直接include就能用（PS：最好用C++20编译，如果用AppleClang的需要把[头文件](color_ostream.h)122行中的requires从句里的requires从句删掉，如果不想用C++20，需要把[头文件](color_ostream.h)122行中的requires从句删掉）。如果需编译范例，编译时确认文件格式是UTF-8带BOM的。  
+项目是header-only（仅头文件）的，直接include就能用（至少需要C++11）。如果需编译范例，编译时确认文件格式是UTF-8带BOM的。  
 我们来看看，[头文件](color_ostream.h)的使用是多么方便吧，只需要把cout改为rd_cout（256 color为rd256_cout, true color为rdtrue_cout，注意一下命名空间)，cout/wcout，clog/wclog，cerr/wcerr同理）：  
 ![sample](sample.png)  
 hello.cpp:
