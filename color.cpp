@@ -4,15 +4,15 @@ using namespace color_ostream;
 using namespace std;
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-    cout << clr::red     << " red "
-              << clr::yellow  << " yellow "
-              << clr::green   << " green "
-              << clr::cyan    << " cyan "
-              << clr::blue    << " blue "
-              << clr::magenta << " magenta "
-              << clr::grey    << " grey "
-              << clr::white   << " white "
-              << clr::reset   << " reset\n";
+    wcout << clr::red     << L" red "
+              << clr::yellow  << L" yellow "
+              << clr::green   << L" green "
+              << clr::cyan    << L" cyan "
+              << clr::blue    << L" blue "
+              << clr::magenta << L" magenta "
+              << clr::grey    << L" grey "
+              << clr::white   << L" white "
+              << clr::reset   << L" reset\n";
     wcout.imbue(locale(locale(),"",LC_CTYPE));
     wcout << clr::red     << clr::on_cyan    << L" 红色 "
               << clr::yellow  << clr::on_blue    << L" 黄色 "
@@ -23,6 +23,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
               << clr::grey    << clr::on_white   << L" 灰色 "
               << clr::white   << clr::on_grey    << L" 白色 "
               << clr::reset                      << L" 重置\n";
-    for (size_t i{}; i < 9; ++i)
-        wcout << random_color.get_color() << L" 彩色 ";
 }
