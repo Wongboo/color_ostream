@@ -2,7 +2,11 @@
 /out
 /cmake*
 /.idea
-/.vs
+/.vs*
 /build
+
+*.out
+*.exe
+*.o
 
 !CMakeLists.txt
