@@ -31,21 +31,21 @@ hello.cpp:
 
 using namespace color_ostream;
 
-int main() {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     rd_wcout.imbue(std::locale(std::locale(),"",LC_CTYPE));
-    rd_wcout << L"你好，沃德\n";
-    rd_wcout << L"你好，世界\n";
-    rd_wcout << L"哈啰，世界\n";
+    rd_wcout << L"Hello world\n";
+    rd_wcout << L"Hola Mundo\n";
+    rd_wcout << L"Bonjour le monde\n";
 
     rd256_wcout << L"\n256 color" << std::endl;
-    rd256_wcout << L"你好，沃德\n";
-    rd256_wcout << L"你好，世界\n";
-    rd256_wcout << L"哈啰，世界\n";
+    rd256_wcout << L"Hello world\n";
+    rd256_wcout << L"Hola Mundo\n";
+    rd256_wcout << L"Bonjour le monde\n";
 
     rdtrue_wcout << L"\ntrue color" << std::endl;
-    rdtrue_wcout << L"你好，沃德\n";
-    rdtrue_wcout << L"你好，世界\n";
-    rdtrue_wcout << L"哈啰，世界\n";
+    rdtrue_wcout << L"Hello world\n";
+    rdtrue_wcout << L"Hola Mundo\n";
+    rdtrue_wcout << L"Bonjour le monde\n";
     return 0;
 }
 ```
@@ -58,7 +58,7 @@ using namespace color_ostream;
 using namespace std;
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-    cout << clr::red     << " red "
+    std::cout << clr::red     << " red "
               << clr::yellow  << " yellow "
               << clr::green   << " green "
               << clr::cyan    << " cyan "
@@ -67,23 +67,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
               << clr::grey    << " grey "
               << clr::white   << " white "
               << clr::reset   << " reset\n";
-    wcout.imbue(locale(locale(),"",LC_CTYPE));
-    wcout << clr::red     << clr::on_cyan    << L" 红色 "
-              << clr::yellow  << clr::on_blue    << L" 黄色 "
-              << clr::green   << clr::on_magenta << L" 绿色 "
-              << clr::cyan    << clr::on_red     << L" 青色 "
-              << clr::blue    << clr::on_yellow  << L" 蓝色 "
-              << clr::magenta << clr::on_green   << L" 紫红 "
-              << clr::grey    << clr::on_white   << L" 灰色 "
-              << clr::white   << clr::on_grey    << L" 白色 "
-              << clr::reset                      << L" 重置\n";
-    for (size_t i{}; i < 9; ++i)
-        wcout << random_color << L" 彩色 ";
-    wcout << '\n';
-
-    random_generator rd;
-    for (size_t i{}; i < 9; ++i)
-        wcout << clrs[random_color.get_num()] << L" 彩色 ";
-    wcout << '\n';
+    std::cout << clr::red     << clr::on_cyan    << " red "
+              << clr::yellow  << clr::on_blue    << " yellow "
+              << clr::green   << clr::on_magenta << " green "
+              << clr::cyan    << clr::on_red     << " cyan "
+              << clr::blue    << clr::on_yellow  << " blue "
+              << clr::magenta << clr::on_green   << " magenta "
+              << clr::grey    << clr::on_white   << " grey "
+              << clr::white   << clr::on_grey    << " white "
+              << clr::reset                      << " reset\n";
 }
 ```

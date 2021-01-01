@@ -3,5 +3,5 @@ project(color)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(color color.cpp)
-add_executable(hello hello.cpp)
+include_directories(.)
+add_subdirectory(example)

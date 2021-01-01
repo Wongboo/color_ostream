@@ -2,7 +2,7 @@
 
 using namespace color_ostream;
 
-int main() {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     rd_wcout.imbue(std::locale(std::locale(),"",LC_CTYPE));
     rd_wcout << L"你好，沃德\n";
     rd_wcout << L"你好，世界\n";
