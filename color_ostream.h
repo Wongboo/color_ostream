@@ -213,12 +213,14 @@ namespace color_ostream {
     };
 
     [[maybe_unused]]random_generator random_color; // NOLINT(cert-err58-cpp)
+
 #define COLORFUL(x) \
     using os##x = decltype(std::x);\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, circle_generator> cc_##x(std::x.rdbuf());\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator> rd_##x(std::x.rdbuf());\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_truecolor<typename os##x::char_type>> rdtrue_##x(std::x.rdbuf());\
     color_ostream<typename os##x::char_type, typename os##x::traits_type, random_generator_256color<typename os##x::char_type>> rd256_##x(std::x.rdbuf());
+
 #define W_COLORFUL(x) COLORFUL(x) COLORFUL(w##x)
 
     W_COLORFUL(cout) // NOLINT(cert-err58-cpp)
