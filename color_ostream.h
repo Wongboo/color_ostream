@@ -191,7 +191,7 @@ namespace color_ostream {
                        << std::setfill(static_cast<CharT>('0')) << dis(gen);
 
             buffer << static_cast<CharT>('m');
-            return buffer.str();
+            return move(*buffer.rdbuf()).str();
         }
     };
 
@@ -208,7 +208,7 @@ namespace color_ostream {
                 buffer << L"\x1b[38;5";
             buffer << static_cast<CharT>(';') << std::setw(3)
                    << std::setfill(static_cast<CharT>('0')) << dis(gen) << static_cast<CharT>('m');
-            return buffer.str();
+            return move(*buffer.rdbuf()).str();
         }
     };
 
